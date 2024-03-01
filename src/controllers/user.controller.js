@@ -245,7 +245,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 })
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
-    const incomingRefreshToken = req.cookies.accessToken || req.body.refreshToken
+    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
 
     if (!incomingRefreshToken) {
         throw new ApiError(400, "unauthorized request")
@@ -363,7 +363,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, user, "Avatar image uploaded successfully")
+            new ApiResponse(200, user, "Avatar image updated successfully")
         )
 
 })
@@ -375,7 +375,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Cover Image file is missing")
     }
 
-    const coverImage = await uploadOnCloudinary(avatarLocalPath)
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
     if (!coverImage.url) {
         throw new ApiError(400, "Error while uploading on coverImage")
@@ -394,7 +394,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, user, "Cover Image uploaded successfully")
+            new ApiResponse(200, user, "Cover Image updated successfully")
         )
 
 })
@@ -402,7 +402,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 const getUserChannelProfil = asyncHandler(async (req, res) => {
     const { username } = req.params
     if (!username?.trim()) {
-        throw new ApiError(400, "username is mmissing")
+        throw new ApiError(400, "username is missing")
     }
 
     const channel = await User.aggregate([
