@@ -179,21 +179,100 @@ const publishAVideo = asyncHandler(async (req, res) => {
 const getVideoById = asyncHandler(async (req, res) => {
     const { videoId } = req.params
     //TODO: get video by id
+    if (!isValidObjectId(videoId)) {
+        throw new ApiError(400, "video Id is invalid")
+    }
+
+    const video = await Video.findById(videoId)
+    if (!video) {
+        throw new ApiError(500, "something went wrong")
+    }
+
+    return res.status(200)
+        .json(
+            new ApiResponse(200, {video}, "Success")
+        )
 })
 
 const updateVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params
     //TODO: update video details like title, description, thumbnail
+    const {title, description, thumbnail} = req.body
+    if (!isValidObjectId(videoId)) {
+        throw new ApiError(400, "videoId is invalid")
+    }
+
+    if (!(title, description, thumbnail)) {
+        throw new ApiError(400, "all details are required")
+    }
+
+    const video = await Video.findByIdAndUpdate(
+        videoId,
+        {
+            title: title,
+            description: description,
+            thumbnail: thumbnail
+        },
+        {new: true}
+    )
+
+    res.status(200)
+        .json(
+            new ApiResponse(200, {video}, "Success")
+        )
 
 })
 
 const deleteVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params
     //TODO: delete video
+    if (!isValidObjectId(videoId)) {
+        throw new ApiError(400, "videoId is invalid")
+    }
+
+    const video = await Video.findByIdAndDelete(videoId)
+
+    return res.status(200)
+        .json(
+            new ApiResponse(200, video, "Success")
+        )
 })
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
     const { videoId } = req.params
+    const video = await Video.findById(videoId)
+    if (video.isPublished){
+        const video = await Video.findByIdAndUpdate(
+            videoId,
+            {
+                $set: {
+                    isPublished: false
+                }
+            },
+            {new: true}
+        )
+
+        return res.status(200)
+            .json(
+                new ApiResponse(200, {video}, "Success")
+            )
+    }
+    else {
+        const video = await Video.findByIdAndUpdate(
+            videoId,
+            {
+                $set: {
+                    isPublished: true
+                }
+            },
+            {new: true}
+        )
+
+        return res.status(200)
+            .json(
+                new ApiResponse(200, {video}, "Success")
+            )
+    }
 })
 
 export {
